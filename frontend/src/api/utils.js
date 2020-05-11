@@ -11,6 +11,7 @@ export async function fetchURL (url, opts) {
   const res = await fetch(`${baseURL}${url}`, {
     headers: {
       'X-Auth': store.state.jwt,
+      'Authorization': 'Bearer ' + localStorage.getItem('id_token'),
       ...headers
     },
     ...rest

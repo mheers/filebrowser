@@ -89,6 +89,7 @@ export async function post (url, content = '', overwrite = false, onupload) {
     let request = new XMLHttpRequest()
     request.open('POST', `${baseURL}/api/resources${url}?override=${overwrite}`, true)
     request.setRequestHeader('X-Auth', store.state.jwt)
+    request.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('id_token'))
 
     if (typeof onupload === 'function') {
       request.upload.onprogress = onupload

@@ -2,15 +2,16 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/errors"
+	libErrors "github.com/filebrowser/filebrowser/v2/errors"
 )
 
-func renderJSON(w http.ResponseWriter, r *http.Request, data interface{}) (int, error) {
+func renderJSON(w http.ResponseWriter, _ *http.Request, data interface{}) (int, error) {
 	marsh, err := json.Marshal(data)
 
 	if err != nil {
@@ -31,10 +32,14 @@ func errToStatus(err error) int {
 		return http.StatusOK
 	case os.IsPermission(err):
 		return http.StatusForbidden
-	case os.IsNotExist(err), err == errors.ErrNotExist:
+	case os.IsNotExist(err), err == libErrors.ErrNotExist:
 		return http.StatusNotFound
-	case os.IsExist(err), err == errors.ErrExist:
+	case os.IsExist(err), err == libErrors.ErrExist:
 		return http.StatusConflict
+	case errors.Is(err, libErrors.ErrPermissionDenied):
+		return http.StatusForbidden
+	case errors.Is(err, libErrors.ErrInvalidRequestParams):
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}
@@ -43,7 +48,7 @@ func errToStatus(err error) int {
 // This is an addaptation if http.StripPrefix in which we don't
 // return 404 if the page doesn't have the needed prefix.
 func stripPrefix(prefix string, h http.Handler) http.Handler {
-	if prefix == "" {
+	if prefix == "" || prefix == "/" {
 		return h
 	}
 

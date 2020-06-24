@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 
-	"github.com/filebrowser/filebrowser/v2/files"
-
 	"github.com/filebrowser/filebrowser/v2/errors"
+	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
 )
 
@@ -74,7 +74,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 	}
 
 	defer func() {
-		io.Copy(ioutil.Discard, r.Body)
+		_, _ = io.Copy(ioutil.Discard, r.Body)
 	}()
 
 	// For directories, only allow POST for creation.
@@ -93,7 +93,18 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
+	action := "upload"
+	if r.Method == http.MethodPut {
+		action = "save"
+	}
+
 	err := d.RunHook(func() error {
+		dir, _ := filepath.Split(r.URL.Path)
+		err := d.user.Fs.MkdirAll(dir, 0775)
+		if err != nil {
+			return err
+		}
+
 		file, err := d.user.Fs.OpenFile(r.URL.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0775)
 		if err != nil {
 			return err
@@ -114,7 +125,7 @@ var resourcePostPutHandler = withUser(func(w http.ResponseWriter, r *http.Reques
 		etag := fmt.Sprintf(`"%x%x"`, info.ModTime().UnixNano(), info.Size())
 		w.Header().Set("ETag", etag)
 		return nil
-	}, "upload", r.URL.Path, "", d.user)
+	}, action, r.URL.Path, "", d.user)
 
 	return errToStatus(err), err
 })
@@ -133,25 +144,22 @@ var resourcePatchHandler = withUser(func(w http.ResponseWriter, r *http.Request,
 		return http.StatusForbidden, nil
 	}
 
-	switch action {
-	case "copy":
-		if !d.user.Perm.Create {
-			return http.StatusForbidden, nil
-		}
-	case "rename":
-	default:
-		action = "rename"
-		if !d.user.Perm.Rename {
-			return http.StatusForbidden, nil
-		}
-	}
-
 	err = d.RunHook(func() error {
-		if action == "copy" {
+		switch action {
+		// TODO: use enum
+		case "copy":
+			if !d.user.Perm.Create {
+				return errors.ErrPermissionDenied
+			}
 			return fileutils.Copy(d.user.Fs, src, dst)
+		case "rename":
+			if !d.user.Perm.Rename {
+				return errors.ErrPermissionDenied
+			}
+			return d.user.Fs.Rename(src, dst)
+		default:
+			return fmt.Errorf("unsupported action %s: %w", action, errors.ErrInvalidRequestParams)
 		}
-
-		return d.user.Fs.Rename(src, dst)
 	}, action, src, dst, d.user)
 
 	return errToStatus(err), err

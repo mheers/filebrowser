@@ -2,7 +2,7 @@
   <div class="item"
   role="button"
   tabindex="0"
-  draggable="true"
+  :draggable="isDraggable"
   @dragstart="dragStart"
   @dragover="dragOver"
   @drop="drop"
@@ -44,7 +44,7 @@ export default {
   },
   props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
   computed: {
-    ...mapState(['selected', 'req']),
+    ...mapState(['selected', 'req', 'user']),
     ...mapGetters(['selectedCount']),
     isSelected () {
       return (this.selected.indexOf(this.index) !== -1)
@@ -55,6 +55,9 @@ export default {
       if (this.type === 'audio') return 'volume_up'
       if (this.type === 'video') return 'movie'
       return 'insert_drive_file'
+    },
+    isDraggable () {
+      return this.user.perm.rename
     },
     canDrop () {
       if (!this.isDir) return false
@@ -129,7 +132,7 @@ export default {
         return
       }
 
-      if (event.shiftKey) {
+      if (event.shiftKey && this.selected.length > 0) {
         let fi = 0
         let la = 0
 
@@ -142,7 +145,9 @@ export default {
         }
 
         for (; fi <= la; fi++) {
-          this.addSelected(fi)
+          if (this.$store.state.selected.indexOf(fi) == -1) {
+            this.addSelected(fi)
+          }
         }
 
         return

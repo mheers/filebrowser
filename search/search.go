@@ -27,7 +27,6 @@ func Search(fs afero.Fs, scope, query string, checker rules.Checker, found func(
 	return afero.Walk(fs, scope, func(originalPath string, f os.FileInfo, err error) error {
 		originalPath = strings.Replace(originalPath, "\\", "/", -1)
 		originalPath = strings.TrimPrefix(originalPath, "/")
-		originalPath = "/" + originalPath
 		path := originalPath
 
 		if path == scope {

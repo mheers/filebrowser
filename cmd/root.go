@@ -58,11 +58,13 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.StringP("key", "k", "", "tls key")
 	flags.StringP("root", "r", ".", "root to prepend to relative paths")
 	flags.String("socket", "", "socket to listen to (cannot be used with address, port, cert nor key flags)")
+	flags.Uint32("socket-perm", 0666, "unix socket file permissions")
 	flags.StringP("baseurl", "b", "", "base url")
 	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
 	flags.Int("img-processors", 4, "image processors count")
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
+	flags.Bool("disable-exec", false, "disables Command Runner feature")
 }
 
 var rootCmd = &cobra.Command{
@@ -142,6 +144,10 @@ user created with the credentials from options "username" and "password".`,
 		switch {
 		case server.Socket != "":
 			listener, err = net.Listen("unix", server.Socket)
+			checkErr(err)
+			socketPerm, err := cmd.Flags().GetUint32("socket-perm") //nolint:govet
+			checkErr(err)
+			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			checkErr(err)
 		case server.TLSKey != "" && server.TLSCert != "":
 			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:shadow
@@ -235,6 +241,9 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	_, disablePreviewResize := getParamB(flags, "disable-preview-resize")
 	server.ResizePreview = !disablePreviewResize
+
+	_, disableExec := getParamB(flags, "disable-exec")
+	server.EnableExec = !disableExec
 
 	return server
 }

@@ -12,6 +12,8 @@ const authMethod = window.FileBrowser.AuthMethod
 const loginPage = window.FileBrowser.LoginPage
 const theme = window.FileBrowser.Theme
 const enableThumbs = window.FileBrowser.EnableThumbs
+const resizePreview = window.FileBrowser.ResizePreview
+const enableExec = window.FileBrowser.EnableExec
 
 export {
   name,
@@ -26,5 +28,7 @@ export {
   authMethod,
   loginPage,
   theme,
-  enableThumbs
+  enableThumbs,
+  resizePreview,
+  enableExec
 }

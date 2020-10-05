@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.8.0](https://github.com/filebrowser/filebrowser/compare/v2.7.0...v2.8.0) (2020-10-05)
+
+
+### Features
+
+* add disable exec flag ([#1090](https://github.com/filebrowser/filebrowser/issues/1090)) ([97693cc](https://github.com/filebrowser/filebrowser/commit/97693cc6117ce1c956baede91de5dd48b904e175))
+
+
+### Bug Fixes
+
+* empty commands setting ([c6d4fcd](https://github.com/filebrowser/filebrowser/commit/c6d4fcd08f5f1531c2cef514dc86019e23e7289f))
+* file upload path encoding ([babd778](https://github.com/filebrowser/filebrowser/commit/babd7783afe85b790e1c558375d7b5013b2d366f))
+* fix empty command name ([#1106](https://github.com/filebrowser/filebrowser/issues/1106)) ([36fb9f5](https://github.com/filebrowser/filebrowser/commit/36fb9f562a2c005ca4390fdebde0b4690201dff9))
+* fix panic when accessing nonexistent .js file in static path ([#1105](https://github.com/filebrowser/filebrowser/issues/1105)) ([ad99bf1](https://github.com/filebrowser/filebrowser/commit/ad99bf180197e0e6d82231a86457585de16366a8))
+* preview key shortcut conflict ([dd7b9dd](https://github.com/filebrowser/filebrowser/commit/dd7b9ddd8546361060ef99e838a691b2fc6c495a))
+* search results absolute url ([26d62e4](https://github.com/filebrowser/filebrowser/commit/26d62e411716a5eb9a5a703e47484cfb3fbf3bd0))
+
+## [2.7.0](https://github.com/filebrowser/filebrowser/compare/v2.6.2...v2.7.0) (2020-09-11)
+
+
+### Features
+
+* add --socket-perm flag to control unix socket file permissions (closes [#1060](https://github.com/filebrowser/filebrowser/issues/1060)) ([65ac734](https://github.com/filebrowser/filebrowser/commit/65ac73414fadc4686c94803a93ff319e8f7ce9d1))
+* preview mobile dropdown ([7787344](https://github.com/filebrowser/filebrowser/commit/778734419de314d4cb64d07109bbab73f8e2e42a))
+* preview size button ([3d2cb83](https://github.com/filebrowser/filebrowser/commit/3d2cb838d111ee61047599f49e76de80c821f341))
+* put selected files in the root of the archive (closes [#1065](https://github.com/filebrowser/filebrowser/issues/1065)) ([8142b32](https://github.com/filebrowser/filebrowser/commit/8142b32f3865eccd3331328e0d087f805d186ed5))
+
 ### [2.6.2](https://github.com/filebrowser/filebrowser/compare/v2.6.1...v2.6.2) (2020-08-05)
 
 ### [2.6.1](https://github.com/filebrowser/filebrowser/compare/v2.6.0...v2.6.1) (2020-07-28)

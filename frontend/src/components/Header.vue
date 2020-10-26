@@ -1,19 +1,35 @@
 <template>
   <header v-if="!isEditor && !isPreview">
     <div>
-      <button @click="openSidebar" :aria-label="$t('buttons.toggleSidebar')" :title="$t('buttons.toggleSidebar')" class="action">
+      <button
+        @click="openSidebar"
+        :aria-label="$t('buttons.toggleSidebar')"
+        :title="$t('buttons.toggleSidebar')"
+        class="action"
+      >
         <i class="material-icons">menu</i>
       </button>
-      <img :src="logoURL" alt="File Browser">
+      <!-- <img :src="logoURL" alt="File Browser"> -->
       <search v-if="isLogged"></search>
     </div>
     <div>
       <template v-if="isLogged">
-        <button @click="openSearch" :aria-label="$t('buttons.search')" :title="$t('buttons.search')" class="search-button action">
+        <button
+          @click="openSearch"
+          :aria-label="$t('buttons.search')"
+          :title="$t('buttons.search')"
+          class="search-button action"
+        >
           <i class="material-icons">search</i>
         </button>
 
-        <button @click="openMore" id="more" :aria-label="$t('buttons.more')" :title="$t('buttons.more')" class="action">
+        <button
+          @click="openMore"
+          id="more"
+          :aria-label="$t('buttons.more')"
+          :title="$t('buttons.more')"
+          class="action"
+        >
           <i class="material-icons">more_vert</i>
         </button>
 
@@ -43,9 +59,15 @@
           <upload-button v-show="showUpload"></upload-button>
           <info-button v-show="isFiles"></info-button>
 
-          <button v-show="isListing" @click="toggleMultipleSelection" :aria-label="$t('buttons.selectMultiple')" :title="$t('buttons.selectMultiple')" class="action" >
+          <button
+            v-show="isListing"
+            @click="toggleMultipleSelection"
+            :aria-label="$t('buttons.selectMultiple')"
+            :title="$t('buttons.selectMultiple')"
+            class="action"
+          >
             <i class="material-icons">check_circle</i>
-            <span>{{ $t('buttons.select') }}</span>
+            <span>{{ $t("buttons.select") }}</span>
           </button>
         </div>
       </template>
@@ -56,24 +78,24 @@
 </template>
 
 <script>
-import Search from './Search'
-import InfoButton from './buttons/Info'
-import DeleteButton from './buttons/Delete'
-import RenameButton from './buttons/Rename'
-import UploadButton from './buttons/Upload'
-import DownloadButton from './buttons/Download'
-import SwitchButton from './buttons/SwitchView'
-import MoveButton from './buttons/Move'
-import CopyButton from './buttons/Copy'
-import ShareButton from './buttons/Share'
-import ShellButton from './buttons/Shell'
-import {mapGetters, mapState} from 'vuex'
-import { logoURL, enableExec } from '@/utils/constants'
-import * as api from '@/api'
-import buttons from '@/utils/buttons'
+import Search from "./Search";
+import InfoButton from "./buttons/Info";
+import DeleteButton from "./buttons/Delete";
+import RenameButton from "./buttons/Rename";
+import UploadButton from "./buttons/Upload";
+import DownloadButton from "./buttons/Download";
+import SwitchButton from "./buttons/SwitchView";
+import MoveButton from "./buttons/Move";
+import CopyButton from "./buttons/Copy";
+import ShareButton from "./buttons/Share";
+import ShellButton from "./buttons/Shell";
+import { mapGetters, mapState } from "vuex";
+import { logoURL, enableExec } from "@/utils/constants";
+import * as api from "@/api";
+import buttons from "@/utils/buttons";
 
 export default {
-  name: 'header-layout',
+  name: "header-layout",
   components: {
     Search,
     InfoButton,
@@ -85,100 +107,109 @@ export default {
     UploadButton,
     SwitchButton,
     MoveButton,
-    ShellButton
+    ShellButton,
   },
-  data: function () {
+  data: function() {
     return {
       width: window.innerWidth,
       pluginData: {
         api,
         buttons,
-        'store': this.$store,
-        'router': this.$router
-      }
-    }
+        store: this.$store,
+        router: this.$router,
+      },
+    };
   },
-  created () {
-    window.addEventListener('resize', () => {
-      this.width = window.innerWidth
-    })
+  created() {
+    window.addEventListener("resize", () => {
+      this.width = window.innerWidth;
+    });
   },
   computed: {
     ...mapGetters([
-      'selectedCount',
-      'isFiles',
-      'isEditor',
-      'isPreview',
-      'isListing',
-      'isLogged'
+      "selectedCount",
+      "isFiles",
+      "isEditor",
+      "isPreview",
+      "isListing",
+      "isLogged",
     ]),
-    ...mapState([
-      'req',
-      'user',
-      'loading',
-      'reload',
-      'multiple'
-    ]),
+    ...mapState(["req", "user", "loading", "reload", "multiple"]),
     logoURL: () => logoURL,
     isExecEnabled: () => enableExec,
-    isMobile () {
-      return this.width <= 736
+    isMobile() {
+      return this.width <= 736;
     },
-    showUpload () {
-      return this.isListing && this.user.perm.create
+    showUpload() {
+      return this.isListing && this.user.perm.create;
     },
-    showDownloadButton () {
-      return this.isFiles && this.user.perm.download
+    showDownloadButton() {
+      return this.isFiles && this.user.perm.download;
     },
-    showDeleteButton () {
-      return this.isFiles && (this.isListing
-        ? (this.selectedCount !== 0 && this.user.perm.delete)
-        : this.user.perm.delete)
+    showDeleteButton() {
+      return (
+        this.isFiles &&
+        (this.isListing
+          ? this.selectedCount !== 0 && this.user.perm.delete
+          : this.user.perm.delete)
+      );
     },
-    showRenameButton () {
-      return this.isFiles && (this.isListing
-        ? (this.selectedCount === 1 && this.user.perm.rename)
-        : this.user.perm.rename)
+    showRenameButton() {
+      return (
+        this.isFiles &&
+        (this.isListing
+          ? this.selectedCount === 1 && this.user.perm.rename
+          : this.user.perm.rename)
+      );
     },
-    showShareButton () {
-      return this.isFiles && (this.isListing
-        ? (this.selectedCount === 1 && this.user.perm.share)
-        : this.user.perm.share)
+    showShareButton() {
+      return (
+        this.isFiles &&
+        (this.isListing
+          ? this.selectedCount === 1 && this.user.perm.share
+          : this.user.perm.share)
+      );
     },
-    showMoveButton () {
-      return this.isFiles && (this.isListing
-        ? (this.selectedCount > 0 && this.user.perm.rename)
-        : this.user.perm.rename)
+    showMoveButton() {
+      return (
+        this.isFiles &&
+        (this.isListing
+          ? this.selectedCount > 0 && this.user.perm.rename
+          : this.user.perm.rename)
+      );
     },
-    showCopyButton () {
-      return this.isFiles && (this.isListing
-        ? (this.selectedCount > 0 && this.user.perm.create)
-        : this.user.perm.create)
+    showCopyButton() {
+      return (
+        this.isFiles &&
+        (this.isListing
+          ? this.selectedCount > 0 && this.user.perm.create
+          : this.user.perm.create)
+      );
     },
-    showMore () {
-      return this.isFiles && this.$store.state.show === 'more'
+    showMore() {
+      return this.isFiles && this.$store.state.show === "more";
     },
-    showOverlay () {
-      return this.showMore
-    }
+    showOverlay() {
+      return this.showMore;
+    },
   },
   methods: {
-    openSidebar () {
-      this.$store.commit('showHover', 'sidebar')
+    openSidebar() {
+      this.$store.commit("showHover", "sidebar");
     },
-    openMore () {
-      this.$store.commit('showHover', 'more')
+    openMore() {
+      this.$store.commit("showHover", "more");
     },
-    openSearch () {
-      this.$store.commit('showHover', 'search')
+    openSearch() {
+      this.$store.commit("showHover", "search");
     },
-    toggleMultipleSelection () {
-      this.$store.commit('multiple', !this.multiple)
-      this.resetPrompts()
+    toggleMultipleSelection() {
+      this.$store.commit("multiple", !this.multiple);
+      this.resetPrompts();
     },
-    resetPrompts () {
-      this.$store.commit('closeHovers')
-    }
-  }
-}
+    resetPrompts() {
+      this.$store.commit("closeHovers");
+    },
+  },
+};
 </script>

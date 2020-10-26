@@ -18,133 +18,148 @@ import { baseURL } from '@/utils/constants'
 Vue.use(Router)
 
 const router = new Router({
-  base: baseURL,
-  mode: 'history',
-  routes: [
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-      beforeEnter: (to, from, next) => {
-        if (store.getters.isLogged) {
-          return next({ path: '/files' })
-        }
+    base: baseURL,
+    mode: 'history',
+    routes: [{
+            path: '/login',
+            name: 'Login',
+            component: Login,
+            beforeEnter: (to, from, next) => {
+                if (store.getters.isLogged) {
+                    return next({ path: '/files' })
+                }
 
-        document.title = 'Login'
-        next()
-      }
-    },
-    {
-      path: '/*',
-      component: Layout,
-      children: [
-        {
-          path: '/share/*',
-          name: 'Share',
-          component: Share
-        },
-        {
-          path: '/files/*',
-          name: 'Files',
-          component: Files,
-          meta: {
-            requiresAuth: true
-          }
-        },
-        {
-          path: '/settings',
-          name: 'Settings',
-          component: Settings,
-          redirect: {
-            path: '/settings/profile'
-          },
-          meta: {
-            requiresAuth: true
-          },
-          children: [
-            {
-              path: '/settings/profile',
-              name: 'Profile Settings',
-              component: ProfileSettings
-            },
-            {
-              path: '/settings/global',
-              name: 'Global Settings',
-              component: GlobalSettings,
-              meta: {
-                requiresAdmin: true
-              }
-            },
-            {
-              path: '/settings/users',
-              name: 'Users',
-              component: Users,
-              meta: {
-                requiresAdmin: true
-              }
-            },
-            {
-              path: '/settings/users/*',
-              name: 'User',
-              component: User,
-              meta: {
-                requiresAdmin: true
-              }
+                document.title = 'Login'
+                next()
             }
-          ]
         },
         {
-          path: '/403',
-          name: 'Forbidden',
-          component: Error403
-        },
-        {
-          path: '/404',
-          name: 'Not Found',
-          component: Error404
-        },
-        {
-          path: '/500',
-          name: 'Internal Server Error',
-          component: Error500
-        },
-        {
-          path: '/files',
-          redirect: {
-            path: '/files/'
-          }
-        },
-        {
-          path: '/*',
-          redirect: to => `/files${to.path}`
+            path: '/*',
+            component: Layout,
+            children: [{
+                    path: '/share/*',
+                    name: 'Share',
+                    component: Share
+                },
+                {
+                    path: '/files/*',
+                    name: 'Files',
+                    component: Files,
+                    meta: {
+                        requiresAuth: true
+                    }
+                },
+                {
+                    path: '/settings',
+                    name: 'Settings',
+                    component: Settings,
+                    redirect: {
+                        path: '/settings/profile'
+                    },
+                    meta: {
+                        requiresAuth: true
+                    },
+                    children: [{
+                            path: '/settings/profile',
+                            name: 'Profile Settings',
+                            component: ProfileSettings
+                        },
+                        {
+                            path: '/settings/global',
+                            name: 'Global Settings',
+                            component: GlobalSettings,
+                            meta: {
+                                requiresAdmin: true
+                            }
+                        },
+                        {
+                            path: '/settings/users',
+                            name: 'Users',
+                            component: Users,
+                            meta: {
+                                requiresAdmin: true
+                            }
+                        },
+                        {
+                            path: '/settings/users/*',
+                            name: 'User',
+                            component: User,
+                            meta: {
+                                requiresAdmin: true
+                            }
+                        }
+                    ]
+                },
+                {
+                    path: '/403',
+                    name: 'Forbidden',
+                    component: Error403
+                },
+                {
+                    path: '/404',
+                    name: 'Not Found',
+                    component: Error404
+                },
+                {
+                    path: '/500',
+                    name: 'Internal Server Error',
+                    component: Error500
+                },
+                {
+                    path: '/files',
+                    redirect: {
+                        path: '/files/'
+                    }
+                },
+                {
+                    path: '/*',
+                    redirect: to => `/files${to.path}`
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = to.name
+    document.title = to.name
 
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!store.getters.isLogged) {
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (!store.getters.isLogged) {
+            next({
+                path: '/login',
+                query: { redirect: to.fullPath }
+            })
 
-      return
+            return
+        }
+
+        if (to.matched.some(record => record.meta.requiresAdmin)) {
+            if (!store.state.user.perm.admin) {
+                next({ path: '/403' })
+                return
+            }
+        }
     }
 
-    if (to.matched.some(record => record.meta.requiresAdmin)) {
-      if (!store.state.user.perm.admin) {
-        next({ path: '/403' })
-        return
-      }
-    }
-  }
+    // keeps the 'locale' query parameter if set
+    if (
+        Object.prototype.hasOwnProperty.call(from.query, 'locale') &&
+        !Object.prototype.hasOwnProperty.call(to.query, 'locale')
+    ) {
+        if (to.path === from.path) {
+            return
+        }
+        if (!to.query) {
+            to.query = {}
+        }
+        to.query.locale = [from.locale]
 
-  next()
+        next({ path: to.path, query: to.query, replace: true })
+    } else {
+        next()
+    }
+
+    next()
 })
 
 export default router

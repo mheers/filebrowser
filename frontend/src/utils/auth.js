@@ -38,6 +38,7 @@ export async function login(username, password, recaptcha) {
             'Authorization': 'Bearer ' + localStorage.getItem('id_token'),
             'Fb-Scope': params.get('scope'),
             'Fb-Userid': params.get('userID'),
+            'Fb-Share': params.get('share'),
         },
         body: JSON.stringify(data)
     })

@@ -7,37 +7,39 @@ import { recaptcha, loginPage } from '@/utils/constants'
 import { login, validateLogin } from '@/utils/auth'
 import App from '@/App'
 
+import 'iframe-resizer/js/iframeResizer.contentWindow';
+
 sync(store, router)
 
-async function start () {
-  if (loginPage) {
-    await validateLogin()
-  } else {
-    await login('', '', '')
-  }
+async function start() {
+    if (loginPage) {
+        await validateLogin()
+    } else {
+        await login('', '', '')
+    }
 
-  if (recaptcha) {
-    await new Promise (resolve => {
-      const check = () => {
-        if (typeof window.grecaptcha === 'undefined') {
-          setTimeout(check, 100)
-        } else {
-          resolve()
-        }
-      }
+    if (recaptcha) {
+        await new Promise(resolve => {
+            const check = () => {
+                if (typeof window.grecaptcha === 'undefined') {
+                    setTimeout(check, 100)
+                } else {
+                    resolve()
+                }
+            }
 
-      check()
+            check()
+        })
+    }
+
+    new Vue({
+        el: '#app',
+        store,
+        router,
+        i18n,
+        template: '<App/>',
+        components: { App }
     })
-  }
-
-  new Vue({
-    el: '#app',
-    store,
-    router,
-    i18n,
-    template: '<App/>',
-    components: { App }
-  })
 }
 
 start()

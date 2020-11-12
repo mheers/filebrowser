@@ -1,5 +1,6 @@
 *.db
 *.lock
+!yarn.lock
 *.bak
 _old
 rice-box.go

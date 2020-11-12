@@ -30,11 +30,14 @@ export async function validateLogin() {
 export async function login(username, password, recaptcha) {
     const data = { username, password, recaptcha }
 
+    const params = (new URL(window.location)).searchParams
     const res = await fetch(`${baseURL}/api/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('id_token')
+            'Authorization': 'Bearer ' + localStorage.getItem('id_token'),
+            'Fb-Scope': params.get('scope'),
+            'Fb-Userid': params.get('userID'),
         },
         body: JSON.stringify(data)
     })

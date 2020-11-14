@@ -34,6 +34,9 @@ export default {
         if (!theme || theme === "") {
           return;
         }
+        if (!["dark"].includes(theme)) {
+          return;
+        }
         const customCssID = "custom-styles";
         if (document.getElementById(customCssID) === null) {
           const style = document.createElement("link");

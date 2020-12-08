@@ -19,6 +19,10 @@ const (
 )
 
 var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		log.Print(r.Header.Get("Origin"))
+		return true // TODO: add sane and secure checks here
+	},
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }

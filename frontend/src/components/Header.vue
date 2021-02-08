@@ -9,12 +9,13 @@
       >
         <i class="material-icons">menu</i>
       </button>
-      <!-- <img :src="logoURL" alt="File Browser"> -->
+      <img :src="logoURL" alt="File Browser" />
       <search v-if="isLogged"></search>
     </div>
     <div>
-      <template v-if="isLogged">
+      <template v-if="isLogged || isSharing">
         <button
+          v-show="!isSharing"
           @click="openSearch"
           :aria-label="$t('buttons.search')"
           :title="$t('buttons.search')"
@@ -34,7 +35,7 @@
         </button>
 
         <!-- Menu that shows on listing AND mobile when there are files selected -->
-        <div id="file-selection" v-if="isMobile && isListing">
+        <div id="file-selection" v-if="isMobile && isListing && !isSharing">
           <span v-if="selectedCount > 0">{{ selectedCount }} selected</span>
           <share-button v-show="showShareButton"></share-button>
           <rename-button v-show="showRenameButton"></rename-button>
@@ -53,14 +54,16 @@
             <delete-button v-show="showDeleteButton"></delete-button>
           </div>
 
-          <shell-button v-if="isExecEnabled && user.perm.execute" />
+          <shell-button
+            v-if="isExecEnabled && !isSharing && user.perm.execute"
+          />
           <switch-button v-show="isListing"></switch-button>
           <download-button v-show="showDownloadButton"></download-button>
           <upload-button v-show="showUpload"></upload-button>
           <info-button v-show="isFiles"></info-button>
 
           <button
-            v-show="isListing"
+            v-show="isListing || (isSharing && req.isDir)"
             @click="toggleMultipleSelection"
             :aria-label="$t('buttons.selectMultiple')"
             :title="$t('buttons.selectMultiple')"
@@ -133,6 +136,7 @@ export default {
       "isPreview",
       "isListing",
       "isLogged",
+      "isSharing",
     ]),
     ...mapState(["req", "user", "loading", "reload", "multiple"]),
     logoURL: () => logoURL,
@@ -144,7 +148,10 @@ export default {
       return this.isListing && this.user.perm.create;
     },
     showDownloadButton() {
-      return this.isFiles && this.user.perm.download;
+      return (
+        (this.isFiles && this.user.perm.download) ||
+        (this.isSharing && this.selectedCount > 0)
+      );
     },
     showDeleteButton() {
       return (
@@ -187,7 +194,9 @@ export default {
       );
     },
     showMore() {
-      return this.isFiles && this.$store.state.show === "more";
+      return (
+        (this.isFiles || this.isSharing) && this.$store.state.show === "more"
+      );
     },
     showOverlay() {
       return this.showMore;

@@ -7,7 +7,6 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20200811163149-2fade2fd0099 // indirect
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/caddyserver/caddy v1.0.5
-	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect

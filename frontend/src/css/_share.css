@@ -63,3 +63,11 @@
 .share__box__items #listing.list .item .modified {
   width: 25%;
 }
+
+.share__wrong__password {
+  background: var(--red);
+  color: #fff;
+  padding: .5em;
+  text-align: center;
+  animation: .2s opac forwards;
+}

@@ -8,12 +8,12 @@ import (
 )
 
 // CustomAuthFn is the interface for a custom authentication function
-type CustomAuthFn func(*http.Request, *users.Storage, string) (*users.User, error)
+type CustomAuthFn func(*http.Request, users.Store, string) (*users.User, error)
 
 // CustomLoginPageFn is the interface for a custom login-page function
 type CustomLoginPageFn func() bool
 
-func defaultAuthFnImpl(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
+func defaultAuthFnImpl(r *http.Request, sto users.Store, root string) (*users.User, error) {
 	return sto.Get(root, uint(1))
 }
 
@@ -37,7 +37,7 @@ type CustomAuth struct {
 }
 
 // Auth uses authenticates user 1.
-func (a CustomAuth) Auth(r *http.Request, sto *users.Storage, root string) (*users.User, error) {
+func (a CustomAuth) Auth(r *http.Request, sto users.Store, root string) (*users.User, error) {
 	if (CustomAuthFnImpl) != nil {
 		return CustomAuthFnImpl(r, sto, root)
 	}

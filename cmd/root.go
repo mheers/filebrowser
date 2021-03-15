@@ -3,6 +3,7 @@ package cmd
 import (
 	"crypto/tls"
 	"errors"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net"
@@ -22,6 +23,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/diskcache"
+	"github.com/filebrowser/filebrowser/v2/frontend"
 	fbhttp "github.com/filebrowser/filebrowser/v2/http"
 	"github.com/filebrowser/filebrowser/v2/img"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -66,6 +68,7 @@ func addServerFlags(flags *pflag.FlagSet) {
 	flags.Bool("disable-thumbnails", false, "disable image thumbnails")
 	flags.Bool("disable-preview-resize", false, "disable resize of image previews")
 	flags.Bool("disable-exec", false, "disables Command Runner feature")
+	flags.Bool("disable-type-detection-by-header", false, "disables type detection by reading file headers")
 }
 
 var rootCmd = &cobra.Command{
@@ -151,12 +154,15 @@ user created with the credentials from options "username" and "password".`,
 			err = os.Chmod(server.Socket, os.FileMode(socketPerm))
 			checkErr(err)
 		case server.TLSKey != "" && server.TLSCert != "":
-			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:shadow
+			cer, err := tls.LoadX509KeyPair(server.TLSCert, server.TLSKey) //nolint:govet
 			checkErr(err)
-			listener, err = tls.Listen("tcp", adr, &tls.Config{Certificates: []tls.Certificate{cer}}) //nolint:shadow
+			listener, err = tls.Listen("tcp", adr, &tls.Config{
+				MinVersion:   tls.VersionTLS12,
+				Certificates: []tls.Certificate{cer}},
+			)
 			checkErr(err)
 		default:
-			listener, err = net.Listen("tcp", adr) //nolint:shadow
+			listener, err = net.Listen("tcp", adr)
 			checkErr(err)
 		}
 
@@ -164,7 +170,12 @@ user created with the credentials from options "username" and "password".`,
 		signal.Notify(sigc, os.Interrupt, syscall.SIGTERM)
 		go cleanupHandler(listener, sigc)
 
-		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server)
+		assetsFs, err := fs.Sub(frontend.Assets(), "dist")
+		if err != nil {
+			panic(err)
+		}
+
+		handler, err := fbhttp.NewHandler(imgSvc, fileCache, d.store, server, assetsFs)
 		checkErr(err)
 
 		defer listener.Close()
@@ -242,6 +253,9 @@ func getRunParams(flags *pflag.FlagSet, st *storage.Storage) *settings.Server {
 
 	_, disablePreviewResize := getParamB(flags, "disable-preview-resize")
 	server.ResizePreview = !disablePreviewResize
+
+	_, disableTypeDetectionByHeader := getParamB(flags, "disable-type-detection-by-header")
+	server.TypeDetectionByHeader = !disableTypeDetectionByHeader
 
 	_, disableExec := getParamB(flags, "disable-exec")
 	server.EnableExec = !disableExec

@@ -1,8 +1,9 @@
 module github.com/filebrowser/filebrowser/v2
 
+go 1.16
+
 require (
 	github.com/DataDog/zstd v1.4.5 // indirect
-	github.com/GeertJohan/go.rice v1.0.0
 	github.com/Sereal/Sereal v0.0.0-20200811163149-2fade2fd0099 // indirect
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/caddyserver/caddy v1.0.5
@@ -43,5 +44,3 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.3.0
 )
-
-go 1.14

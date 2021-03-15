@@ -33,7 +33,7 @@ func parseQueryFiles(r *http.Request, f *files.FileInfo, _ *users.User) ([]strin
 		fileSlice = append(fileSlice, f.Path)
 	} else {
 		for _, name := range names {
-			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) //nolint:shadow
+			name, err := url.QueryUnescape(strings.Replace(name, "+", "%2B", -1)) //nolint:govet
 			if err != nil {
 				return nil, err
 			}
@@ -84,11 +84,12 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 	}
 
 	file, err := files.NewFileInfo(files.FileOptions{
-		Fs:      d.user.Fs,
-		Path:    r.URL.Path,
-		Modify:  d.user.Perm.Modify,
-		Expand:  false,
-		Checker: d,
+		Fs:         d.user.Fs,
+		Path:       r.URL.Path,
+		Modify:     d.user.Perm.Modify,
+		Expand:     false,
+		ReadHeader: d.server.TypeDetectionByHeader,
+		Checker:    d,
 	})
 	if err != nil {
 		return errToStatus(err), err
@@ -107,8 +108,6 @@ var rawHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) 
 })
 
 func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
-	// Checks are always done with paths with "/" as path separator.
-	path = strings.Replace(path, "\\", "/", -1)
 	if !d.Check(path) {
 		return nil
 	}
@@ -133,7 +132,7 @@ func addFile(ar archiver.Writer, d *data, path, commonPath string) error {
 
 	if path != commonPath {
 		filename := strings.TrimPrefix(path, commonPath)
-		filename = strings.TrimPrefix(filename, "/")
+		filename = strings.TrimPrefix(filename, string(filepath.Separator))
 		err = ar.Write(archiver.File{
 			FileInfo: archiver.FileInfo{
 				FileInfo:   info,
@@ -174,20 +173,25 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 		return http.StatusInternalServerError, err
 	}
 
-	name := file.Name
-	if name == "." || name == "" {
-		name = "archive"
-	}
-	name += extension
-	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
-
 	err = ar.Create(w)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 	defer ar.Close()
 
-	commonDir := fileutils.CommonPrefix('/', filenames...)
+	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
+
+	var name string
+	if len(filenames) > 1 {
+		name = "_" + filepath.Base(commonDir)
+	} else {
+		name = file.Name
+	}
+	if name == "." || name == "" {
+		name = "archive"
+	}
+	name += extension
+	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
 
 	for _, fname := range filenames {
 		err = addFile(ar, d, fname, commonDir)

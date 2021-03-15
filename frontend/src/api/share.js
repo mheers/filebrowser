@@ -4,10 +4,6 @@ export async function list() {
   return fetchJSON('/api/shares')
 }
 
-export async function getHash(hash) {
-  return fetchJSON(`/api/public/share/${hash}`)
-}
-
 export async function get(url) {
   url = removePrefix(url)
   return fetchJSON(`/api/share${url}`)
@@ -23,14 +19,18 @@ export async function remove(hash) {
   }
 }
 
-export async function create(url, expires = '', unit = 'hours') {
+export async function create(url, password = '', expires = '', unit = 'hours') {
   url = removePrefix(url)
   url = `/api/share${url}`
   if (expires !== '') {
     url += `?expires=${expires}&unit=${unit}`
   }
-
+  let body = '{}';
+  if (password != '' || expires !== '' || unit !== 'hours') {
+    body = JSON.stringify({password: password, expires: expires, unit: unit})
+  }
   return fetchJSON(url, {
-    method: 'POST'
+    method: 'POST',
+    body: body,
   })
 }

@@ -4,7 +4,7 @@ import moment from 'moment'
 const mutations = {
   closeHovers: state => {
     state.show = null
-    state.showMessage = null
+    state.showConfirm = null
   },
   toggleShell: (state) => {
     state.showShell = !state.showShell
@@ -16,16 +16,13 @@ const mutations = {
     }
 
     state.show = value.prompt
-    state.showMessage = value.message
     state.showConfirm = value.confirm
   },
-  showError: (state, value) => {
+  showError: (state) => {
     state.show = 'error'
-    state.showMessage = value
   },
-  showSuccess: (state, value) => {
+  showSuccess: (state) => {
     state.show = 'success'
-    state.showMessage = value
   },
   setLoading: (state, value) => { state.loading = value },
   setReload: (state, value) => { state.reload = value },
@@ -48,9 +45,6 @@ const mutations = {
   setJWT: (state, value) => (state.jwt = value),
   multiple: (state, value) => (state.multiple = value),
   addSelected: (state, value) => (state.selected.push(value)),
-  addPlugin: (state, value) => {
-    state.plugins.push(value)
-  },
   removeSelected: (state, value) => {
     let i = state.selected.indexOf(value)
     if (i === -1) return
@@ -83,11 +77,7 @@ const mutations = {
   resetClipboard: (state) => {
     state.clipboard.key = ''
     state.clipboard.items = []
-  },
-  setPreviewMode(state, value) {
-    state.previewMode = value
-  },
-  setHash: (state, value) => (state.hash = value),
+  }
 }
 
 export default mutations

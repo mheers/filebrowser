@@ -34,12 +34,8 @@ export async function fetchJSON(url, opts) {
   }
 }
 
-export function removePrefix(url) {
-  if (url.startsWith("/files")) {
-    url = url.slice(6);
-  } else if (store.getters["isSharing"]) {
-    url = url.slice(7 + store.state.hash.length);
-  }
+export function removePrefix (url) {
+  url = url.split('/').splice(2).join('/')
 
   if (url === "") url = "/";
   if (url[0] !== "/") url = "/" + url;

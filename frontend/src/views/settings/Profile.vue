@@ -1,35 +1,40 @@
 <template>
-  <div class="dashboard">
-     <form class="card" @submit="updateSettings">
-      <div class="card-title">
-        <h2>{{ $t('settings.profileSettings') }}</h2>
-      </div>
+  <div class="row">
+    <div class="column">
+      <form class="card" @submit="updateSettings">
+        <div class="card-title">
+          <h2>{{ $t('settings.profileSettings') }}</h2>
+        </div>
 
-      <div class="card-content">
-        <p><input type="checkbox" v-model="hideDotfiles"> {{ $t('settings.hideDotfiles') }}</p>
-        <h3>{{ $t('settings.language') }}</h3>
-        <languages class="input input--block" :locale.sync="locale"></languages>
-      </div>
+        <div class="card-content">
+          <p><input type="checkbox" v-model="hideDotfiles"> {{ $t('settings.hideDotfiles') }}</p>
+          <p><input type="checkbox" v-model="singleClick"> {{ $t('settings.singleClick') }}</p>
+          <h3>{{ $t('settings.language') }}</h3>
+          <languages class="input input--block" :locale.sync="locale"></languages>
+        </div>
 
-      <div class="card-action">
-        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
-      </div>
-    </form>
+        <div class="card-action">
+          <input class="button button--flat" type="submit" :value="$t('buttons.update')">
+        </div>
+      </form>
+    </div>
 
-    <form class="card" v-if="!user.lockPassword" @submit="updatePassword">
-      <div class="card-title">
-        <h2>{{ $t('settings.changePassword') }}</h2>
-      </div>
+    <div class="column">
+      <form class="card" v-if="!user.lockPassword" @submit="updatePassword">
+        <div class="card-title">
+          <h2>{{ $t('settings.changePassword') }}</h2>
+        </div>
 
-      <div class="card-content">
-        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password">
-        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password">
-      </div>
+        <div class="card-content">
+          <input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password">
+          <input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password">
+        </div>
 
-      <div class="card-action">
-        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
-      </div>
-    </form>
+        <div class="card-action">
+          <input class="button button--flat" type="submit" :value="$t('buttons.update')">
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -47,6 +52,8 @@ export default {
     return {
       password: '',
       passwordConf: '',
+      hideDotfiles: false,
+      singleClick: false,
       locale: ''
     }
   },
@@ -69,6 +76,7 @@ export default {
   created () {
     this.locale = this.user.locale
     this.hideDotfiles = this.user.hideDotfiles
+    this.singleClick = this.user.singleClick
   },
   methods: {
     ...mapMutations([ 'updateUser' ]),
@@ -92,8 +100,8 @@ export default {
       event.preventDefault()
 
       try {
-        const data = { id: this.user.id, locale: this.locale, hideDotfiles: this.hideDotfiles }
-        await api.update(data, ['locale', 'hideDotfiles'])
+        const data = { id: this.user.id, locale: this.locale, hideDotfiles: this.hideDotfiles, singleClick: this.singleClick }
+        await api.update(data, ['locale', 'hideDotfiles', 'singleClick'])
         this.updateUser(data)
         this.$showSuccess(this.$t('settings.settingsUpdated'))
       } catch (e) {

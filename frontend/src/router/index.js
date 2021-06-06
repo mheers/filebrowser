@@ -1,18 +1,18 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Login from '@/views/Login'
-import Layout from '@/views/Layout'
-import Files from '@/views/Files'
-import Share from '@/views/Share'
-import Users from '@/views/settings/Users'
-import User from '@/views/settings/User'
-import Settings from '@/views/Settings'
-import GlobalSettings from '@/views/settings/Global'
-import ProfileSettings from '@/views/settings/Profile'
-import Shares from '@/views/settings/Shares'
-import Errors from '@/views/Errors'
-import store from '@/store'
-import { baseURL } from '@/utils/constants'
+import Vue from "vue";
+import Router from "vue-router";
+import Login from "@/views/Login";
+import Layout from "@/views/Layout";
+import Files from "@/views/Files";
+import Share from "@/views/Share";
+import Users from "@/views/settings/Users";
+import User from "@/views/settings/User";
+import Settings from "@/views/Settings";
+import GlobalSettings from "@/views/settings/Global";
+import ProfileSettings from "@/views/settings/Profile";
+import Shares from "@/views/settings/Shares";
+import Errors from "@/views/Errors";
+import store from "@/store";
+import { baseURL } from "@/utils/constants";
 
 Vue.use(Router);
 
@@ -67,17 +67,17 @@ const router = new Router({
               component: ProfileSettings,
             },
             {
+              path: "/settings/shares",
+              name: "Shares",
+              component: Shares,
+            },
+            {
               path: "/settings/global",
               name: "Global Settings",
               component: GlobalSettings,
               meta: {
                 requiresAdmin: true,
               },
-            },
-            {
-              path: "/settings/shares",
-              name: "Shares",
-              component: Shares,
             },
             {
               path: "/settings/users",
@@ -98,31 +98,31 @@ const router = new Router({
           ],
         },
         {
-          path: '/403',
-          name: 'Forbidden',
+          path: "/403",
+          name: "Forbidden",
           component: Errors,
           props: {
             errorCode: 403,
-            showHeader: true
-          }
+            showHeader: true,
+          },
         },
         {
-          path: '/404',
-          name: 'Not Found',
+          path: "/404",
+          name: "Not Found",
           component: Errors,
           props: {
             errorCode: 404,
-            showHeader: true
-          }
+            showHeader: true,
+          },
         },
         {
-          path: '/500',
-          name: 'Internal Server Error',
+          path: "/500",
+          name: "Internal Server Error",
           component: Errors,
           props: {
             errorCode: 500,
-            showHeader: true
-          }
+            showHeader: true,
+          },
         },
         {
           path: "/files",

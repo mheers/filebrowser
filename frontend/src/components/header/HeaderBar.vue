@@ -1,6 +1,12 @@
 <template>
   <header>
-    <action v-if="showMenu !== undefined" class="menu-button" icon="menu" :label="$t('buttons.toggleSidebar')" @action="openSidebar()" />
+    <action
+      v-if="showMenu !== undefined"
+      class="menu-button"
+      icon="menu"
+      :label="$t('buttons.toggleSidebar')"
+      @action="openSidebar()"
+    />
 
     <slot />
 
@@ -8,39 +14,44 @@
       <slot name="actions" />
     </div>
 
-    <action v-if="this.$slots.actions" id="more" icon="more_vert" :label="$t('buttons.more')" @action="$store.commit('showHover', 'more')" />
+    <action
+      v-if="this.$slots.actions"
+      id="more"
+      icon="more_vert"
+      :label="$t('buttons.more')"
+      @action="$store.commit('showHover', 'more')"
+    />
 
-    <div class="overlay" v-show="this.$store.state.show == 'more'" @click="$store.commit('closeHovers')" />
+    <div
+      class="overlay"
+      v-show="this.$store.state.show == 'more'"
+      @click="$store.commit('closeHovers')"
+    />
   </header>
 </template>
 
 <script>
-import { logoURL } from '@/utils/constants'
+import { logoURL } from "@/utils/constants";
 
-import Action from '@/components/header/Action'
+import Action from "@/components/header/Action";
 
 export default {
-  name: 'header-bar',
-  props: [
-    'showLogo',
-    'showMenu',
-  ],
+  name: "header-bar",
+  props: ["showLogo", "showMenu"],
   components: {
-    Action
+    Action,
   },
   data: function () {
     return {
-      logoURL
-    }
+      logoURL,
+    };
   },
   methods: {
-    openSidebar () {
-      this.$store.commit('showHover', 'sidebar')
-    }
-  }
-}
+    openSidebar() {
+      this.$store.commit("showHover", "sidebar");
+    },
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

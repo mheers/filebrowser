@@ -181,14 +181,14 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 
 	commonDir := fileutils.CommonPrefix(filepath.Separator, filenames...)
 
-	var name string
-	if len(filenames) > 1 {
-		name = "_" + filepath.Base(commonDir)
-	} else {
+	name := filepath.Base(commonDir)
+	if name == "." || name == "" || name == string(filepath.Separator) {
 		name = file.Name
 	}
-	if name == "." || name == "" {
-		name = "archive"
+	// Prefix used to distinguish a filelist generated
+	// archive from the full directory archive
+	if len(filenames) > 1 {
+		name = "_" + name
 	}
 	name += extension
 	w.Header().Set("Content-Disposition", "attachment; filename*=utf-8''"+url.PathEscape(name))
@@ -204,6 +204,11 @@ func rawDirHandler(w http.ResponseWriter, r *http.Request, d *data, file *files.
 }
 
 func rawFileHandler(w http.ResponseWriter, r *http.Request, file *files.FileInfo) (int, error) {
+	isFresh := checkEtag(w, r, file.ModTime.Unix(), file.Size)
+	if isFresh {
+		return http.StatusNotModified, nil
+	}
+
 	fd, err := file.Fs.Open(file.Path)
 	if err != nil {
 		return http.StatusInternalServerError, err

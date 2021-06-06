@@ -20,10 +20,10 @@ MODULE = $(shell env GO111MODULE=on $(GO) list -m)
 DATE    ?= $(shell date +%FT%T%z)
 VERSION ?= $(shell git describe --tags --always --match=v* 2> /dev/null || \
 			cat $(CURDIR)/.version 2> /dev/null || echo v0)
-VERSION_HASH = 	$(shell git rev-parse HEAD)
+VERSION_HASH = 	$(shell git rev-parse --short HEAD)
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
-LDFLAGS += -X "$(MODULE)/varsion.Version=$(VERSION)" -X "$(MODULE)/varsion.CommitSHA=$(VERSION_HASH)"
+LDFLAGS += -X "$(MODULE)/version.Version=$(VERSION)" -X "$(MODULE)/version.CommitSHA=$(VERSION_HASH)"
 
 # tools
 $(BIN):
@@ -49,7 +49,7 @@ build-frontend: | ; $(info $(M) building frontend…)
 ## build-backend: Build backend
 .PHONY: build-backend
 build-backend: | ; $(info $(M) building backend…)
-	$Q $(GO) build -ldflags '$(LDFLAGS)' -o filebrowser
+	$Q $(GO) build -ldflags '$(LDFLAGS)' -o .
 
 ## test: Run all tests
 .PHONY: test
@@ -61,7 +61,7 @@ test-frontend: | ; $(info $(M) running frontend tests…)
 
 ## test-backend: Run backend tests
 .PHONY: test-backend
-test-backend: | $(RICE) ; $(info $(M) running backend tests…)
+test-backend: | ; $(info $(M) running backend tests…)
 	$Q $(GO) test -v ./...
 
 ## lint: Lint

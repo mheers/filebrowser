@@ -38,7 +38,7 @@ var withHashFile = func(fn handleFunc) handleFunc {
 			Fs:         d.user.Fs,
 			Path:       link.Path,
 			Modify:     d.user.Perm.Modify,
-			Expand:     true,
+			Expand:     false,
 			ReadHeader: d.server.TypeDetectionByHeader,
 			Checker:    d,
 			Token:      link.Token,
@@ -135,4 +135,9 @@ func authenticateShareRequest(r *http.Request, l *share.Link) (int, error) {
 	}
 
 	return 0, nil
+}
+
+func healthHandler(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(`{"status":"OK"}`))
 }

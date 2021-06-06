@@ -34,8 +34,8 @@ export async function fetchJSON(url, opts) {
   }
 }
 
-export function removePrefix (url) {
-  url = url.split('/').splice(2).join('/')
+export function removePrefix(url) {
+  url = url.split("/").splice(2).join("/");
 
   if (url === "") url = "/";
   if (url[0] !== "/") url = "/" + url;
@@ -46,7 +46,7 @@ export function removePrefix (url) {
 }
 
 export function replaceSpecialChars(str) {
-  return str.replace(/[!'()*]/g, function(c) {
+  return str.replace(/[!'()*]/g, function (c) {
     return "%" + c.charCodeAt(0).toString(16);
   });
 }

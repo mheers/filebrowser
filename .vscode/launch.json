@@ -12,7 +12,10 @@
             "program": "${workspaceFolder}",
             "args": [
                 "-p",
-                "8090"
+                "8095",
+                "--noauth",
+                "--root",
+                "uploads",
             ]
         }
     ]

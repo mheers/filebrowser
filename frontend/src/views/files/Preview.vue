@@ -175,7 +175,7 @@ export default {
       if (this.req.type === "image" && !this.fullSize) {
         return `${baseURL}/api/preview/big${url.encodePath(
           this.req.path
-        )}?k=${key}`;
+        )}?auth=${this.jwt}&k=${key}`;
       }
       return `${baseURL}/api/raw${url.encodePath(this.req.path)}?k=${key}`;
     },

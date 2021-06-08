@@ -2,7 +2,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   runtimeCompiler: true,
-  publicPath: "[{[ .StaticURL ]}]",
+  publicPath: "/static/",
   parallel: 2,
   configureWebpack: {
     plugins: [

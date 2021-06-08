@@ -126,9 +126,12 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			}
 		}
 
-		http.FileServer(http.FS(assetsFs)).ServeHTTP(w, r)
+		if !strings.HasSuffix(r.URL.Path, ".js") {
+			http.FileServer(http.FS(assetsFs)).ServeHTTP(w, r)
+			return 0, nil
+		}
 
-		return 0, nil
+		return handleWithStaticData(w, r, d, assetsFs, r.URL.Path, "application/javascript; charset=utf-8")
 	}, "/static/", store, server)
 
 	return index, static

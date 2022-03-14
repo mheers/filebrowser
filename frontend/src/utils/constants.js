@@ -1,3 +1,21 @@
+// window.FileBrowser = {
+//   Name: "FileBrowser",
+//   DisableExternal: false,
+//   BaseURL: "",
+//   StaticURL: "",
+//   ReCaptcha: false,
+//   ReCaptchaKey: "",
+//   Signup: false,
+//   Version: "1.0.0",
+//   NoAuth: true,
+//   AuthMethod: "none",
+//   LoginPage: "login",
+//   Theme: "default",
+//   EnableThumbs: true,
+//   ResizePreview: true,
+//   EnableExec: true,
+// };
+
 const name = window.FileBrowser.Name || "File Browser";
 const disableExternal = window.FileBrowser.DisableExternal;
 const baseURL = window.FileBrowser.BaseURL;

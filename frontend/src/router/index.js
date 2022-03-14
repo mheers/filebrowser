@@ -181,4 +181,11 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
+router.afterEach((to, from) => {
+  window.parent.postMessage(
+    { type: "filebrowserURLChanged", from: from.path, to: to.path },
+    "*"
+  );
+});
+
 export default router;

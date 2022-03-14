@@ -20,6 +20,11 @@ export default {
     setTimeout(function () {
       loading.parentNode.removeChild(loading);
     }, 200);
+
+    this.subscribe();
+  },
+  beforeDestroy() {
+    this.unsubscribe();
   },
   methods: {
     ...mapMutations(["updateUser"]),
@@ -49,6 +54,35 @@ export default {
           // Insert our new styles before the first script tag
           ref.parentNode.insertBefore(style, ref);
         }
+      }
+    },
+    subscribe() {
+      this.listenToEvents();
+    },
+    unsubscribe() {
+      this.unlistenFromEvents();
+    },
+    listenToEvents() {
+      window.addEventListener(
+        "message",
+        (event) => this.handleEvent(event),
+        false
+      );
+    },
+    unlistenFromEvents() {
+      window.removeEventListener(
+        "message",
+        (event) => this.handleEvent(event),
+        false
+      );
+    },
+    handleEvent(event) {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      if (event.data.type === "filebrowserURLChanged") {
+        const dst = `/${event.data.to}`;
+        this.$router.push(dst, true);
       }
     },
   },

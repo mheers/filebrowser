@@ -39,6 +39,7 @@ export async function login(username, password, recaptcha) {
       "Fb-Scope": params.get("scope"),
       "Fb-Userid": params.get("userID"),
       "Fb-Share": params.get("share"),
+      "Fb-Custom": params.get("custom"),
     },
     body: JSON.stringify(data),
   });

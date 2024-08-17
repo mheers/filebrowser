@@ -82,6 +82,7 @@ export default {
       }
       if (event.data.type === "filebrowserURLChanged") {
         const dst = `/${event.data.to}`;
+        console.log("FB: Internal redirecting to", dst);
         this.$router.push(dst, true);
       }
     },
